@@ -10,7 +10,7 @@ import Alamofire
 
 class NetworkService {
     
-    private let apiKey = "57bc8e75618146908a0173547240513"
+    private let apiKey = "57bc8e75618146908a0173547240512"
     private let baseUrl = "https://api.weatherapi.com/v1/forecast.json"
     
     /// Method 1: Fetches forecast data using a explicit City Name string
