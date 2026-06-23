@@ -5,14 +5,18 @@
 //  Created by Youssef Abd El-Fatah on 22/06/2026.
 //
 
+import Foundation
 
-struct Day {
 
-    // the middle section in home screen
+struct Day: Identifiable, Hashable {
+    
+    let id = UUID()
+    
+    // The middle section in home screen
     let temp_icon: String
     let temp_h: Double
     let temp_l: Double
 
-    // the hours screen
+    // The hours screen
     let hours: [Hour]
 }

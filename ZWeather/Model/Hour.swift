@@ -6,8 +6,10 @@
 //
 
 
-struct Hour {
+import Foundation
 
+struct Hour: Identifiable, Hashable {
+    let id = UUID()
     let temp_icon: String
     let temp: Double
 }
