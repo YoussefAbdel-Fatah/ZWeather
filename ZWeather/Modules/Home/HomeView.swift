@@ -124,8 +124,9 @@ struct HomeView: View {
                 }
             }
             .onAppear {
-                // Fetch data when the view appears using Alexandria coordinates
-                viewModel.locationManager.requestLocation()
+                if viewModel.forecast == nil {
+                    viewModel.locationManager.requestLocation()
+                }
             }
             .sheet(isPresented: $showingSearch) {
                 SearchView { selectedCityName in
