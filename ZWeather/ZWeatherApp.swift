@@ -27,6 +27,6 @@ struct ZWeatherApp: App {
         WindowGroup {
             HomeView()
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(for: RecentCity.self)
     }
 }

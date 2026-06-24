@@ -1,23 +1,46 @@
+//
+//  SearchView.swift
+//  ZWeather
+//
+//  Created by Youssef Abd El-Fatah on 23/06/2026.
+//
+
+
 import SwiftUI
 import SwiftData
 
 struct SearchView: View {
-    // Grabs the database engine from the environment
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     
-    // Automatically fetches cities and sorts them by newest date
+    // SwiftData Query for history
     @Query(sort: \RecentCity.searchDate, order: .reverse) private var recentCities: [RecentCity]
     
     @State private var searchText = ""
-    
-    // This closure tells the HomeView what city the user picked
     var onCitySelected: (String) -> Void
+    
+    // 1. Your static database of allowed cities
+    // You can expand this array with as many cities as you want to support
+    let availableCities = [
+        "Alexandria", "Barcelona", "Cairo", "London",
+        "New York", "Paris", "Tokyo", "Dubai", "Sydney", "Rome"
+    ]
+    
+    // 2. Computed property to automatically filter the list based on typing
+    var searchResults: [String] {
+        if searchText.isEmpty {
+            return availableCities
+        } else {
+            // Case-insensitive filtering
+            return availableCities.filter { $0.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
     
     var body: some View {
         NavigationStack {
             List {
-                if !recentCities.isEmpty {
+                // Section 1: Recent Searches (Only show if history exists and user isn't actively typing)
+                if !recentCities.isEmpty && searchText.isEmpty {
                     Section("Recent Searches") {
                         ForEach(recentCities) { city in
                             Button(action: {
@@ -33,15 +56,23 @@ struct SearchView: View {
                         }
                     }
                 }
+                
+                // Section 2: The Filtered Static List
+                Section(searchText.isEmpty ? "All Cities" : "Search Results") {
+                    ForEach(searchResults, id: \.self) { city in
+                        Button(action: {
+                            processSelection(cityName: city)
+                        }) {
+                            Text(city)
+                                .foregroundColor(.primary)
+                        }
+                    }
+                }
             }
             .navigationTitle("Search City")
             .navigationBarTitleDisplayMode(.inline)
-            // Native iOS Search Bar
             .searchable(text: $searchText, prompt: "Search for a city...")
-            // Triggers when the user hits "Return/Search" on the keyboard
-            .onSubmit(of: .search) { 
-                processSelection(cityName: searchText)
-            }
+            // Removed .onSubmit because the user must tap a valid row now!
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Cancel") { dismiss() }
@@ -50,18 +81,16 @@ struct SearchView: View {
         }
     }
     
-    // Handles the logic for both typing a new city OR tapping a recent one
+    // 3. Handles saving to history and passing data back
     private func processSelection(cityName: String) {
-        guard !cityName.isEmpty else { return }
-        
-        // 1. Save it to SwiftData using your new service
+        // Save to SwiftData using your service
         let service = SwiftDataLocalService(context: context)
         service.addCity(name: cityName)
         
-        // 2. Pass the name back to HomeView
+        // Trigger the closure to tell HomeView to fetch the weather
         onCitySelected(cityName)
         
-        // 3. Close the search sheet
+        // Close the search screen
         dismiss()
     }
 }
