@@ -14,6 +14,7 @@ struct HourlyForecastView: View {
     private var isNight: Bool {
         let hour = Calendar.current.component(.hour, from: Date())
         return hour < 6 || hour >= 18
+        // return true
     }
     
     // Dynamic text color to match the background

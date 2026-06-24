@@ -12,12 +12,12 @@ struct WeatherDetailsSection: View {
     let textColor: Color
     
     let columns = [
-        GridItem(.flexible(), alignment: .leading),
-        GridItem(.flexible(), alignment: .leading)
+        GridItem(.flexible()),
+        GridItem(.flexible())
     ]
     
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 30) {
+        LazyVGrid(columns: columns, spacing: 30) { // Note: 'spacing: 30' here only applies to the vertical space between rows
             
             DetailCell(
                 title: "VISIBILITY",
@@ -39,14 +39,14 @@ struct WeatherDetailsSection: View {
             
             DetailCell(
                 title: "PRESSURE",
-                // Adding formatting to show numbers like 1,021 cleanly
                 value: "\(Int(forecast.pressure.rounded()).formatted())",
                 textColor: textColor
             )
             
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 20)
+        // This applies the exact same system margin to both the left and right sides
+        .padding(.horizontal)
+        .padding(.top, 10)
     }
 }
 

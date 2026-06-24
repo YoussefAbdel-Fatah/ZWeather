@@ -7,16 +7,35 @@
 
 
 import Foundation
+import Combine
 
 class WeatherViewModel: ObservableObject {
     
-    // UI-facing states
     @Published var forecast: Forecast?
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     
-    // Internal instance of your network client
+    // Initialize your services
     private let networkService = NetworkService()
+    let locationManager = LocationManager()
+    
+    // Holds the Combine subscription
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        setupLocationListener()
+    }
+    
+    // This listens for the exact moment the GPS coordinates are found
+    private func setupLocationListener() {
+        locationManager.$location
+            .compactMap { $0 } // Ignores nil values
+            .sink { [weak self] coordinate in
+                // As soon as we get coordinates, fetch the weather!
+                self?.getWeather(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            }
+            .store(in: &cancellables)
+    }
     
     /// Requests weather via text input (City name)
     func getWeather(for city: String) {

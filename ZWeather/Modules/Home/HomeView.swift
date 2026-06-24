@@ -16,6 +16,7 @@ struct HomeView: View {
     private var isNight: Bool {
         let hour = Calendar.current.component(.hour, from: Date())
         return hour < 6 || hour >= 18
+//        return true
     }
     
     // Dynamic Text Color based on time of day
@@ -68,7 +69,7 @@ struct HomeView: View {
             }
             .onAppear {
                 // Fetch data when the view appears using Alexandria coordinates
-                viewModel.getWeather(latitude: 31.2001, longitude: 29.9187)
+                viewModel.locationManager.requestLocation()
             }
             // Hides navigation bar on Home Screen
             .toolbar(.hidden, for: .navigationBar)
