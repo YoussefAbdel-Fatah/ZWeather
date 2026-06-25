@@ -13,14 +13,11 @@ struct SearchView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     
-    // SwiftData Query for history
     @Query(sort: \RecentCity.searchDate, order: .reverse) private var recentCities: [RecentCity]
     
     @State private var searchText = ""
     var onCitySelected: (String) -> Void
     
-    // 1. Your static database of allowed cities
-    // You can expand this array with as many cities as you want to support
     let availableCities = [
         "Alexandria", "Barcelona", "Cairo", "London",
         "New York", "Paris", "Tokyo", "Dubai", "Sydney", "Rome"
@@ -31,7 +28,6 @@ struct SearchView: View {
         if searchText.isEmpty {
             return availableCities
         } else {
-            // Case-insensitive filtering
             return availableCities.filter { $0.localizedCaseInsensitiveContains(searchText) }
         }
     }
@@ -39,7 +35,7 @@ struct SearchView: View {
     var body: some View {
         NavigationStack {
             List {
-                // Section 1: Recent Searches (Only show if history exists and user isn't actively typing)
+                // Section 1: Recent Searches (SwiftData city names)
                 if !recentCities.isEmpty && searchText.isEmpty {
                     Section("Recent Searches") {
                         ForEach(recentCities) { city in
@@ -72,7 +68,6 @@ struct SearchView: View {
             .navigationTitle("Search City")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, prompt: "Search for a city...")
-            // Removed .onSubmit because the user must tap a valid row now!
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Cancel") { dismiss() }

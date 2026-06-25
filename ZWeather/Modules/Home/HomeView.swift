@@ -14,15 +14,13 @@ struct HomeView: View {
     
     // ViewModel setup
     @StateObject private var viewModel = WeatherViewModel()
-    
-    // Helper to determine if it's currently night time
+
     private var isNight: Bool {
         let hour = Calendar.current.component(.hour, from: Date())
         return hour < 6 || hour >= 18
-                return true
+//        return true
     }
     
-    // Dynamic Text Color based on time of day
     private var dynamicTextColor: Color {
         isNight ? .white : .black
     }
@@ -35,26 +33,23 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // 1. Dynamic Background Image Layer
                 Image(isNight ? "background_night" : "background_morning")
                     .resizable()
                     .ignoresSafeArea()
                 
-                // 2. State Management Layer
                 if viewModel.isLoading {
                     ProgressView()
                         .scaleEffect(1.5)
-                        .tint(dynamicTextColor) // Matches the spinner to the time of day
+                        .tint(dynamicTextColor)
                     
                 } else if let forecast = viewModel.forecast {
-                    // 3. Main UI Content Layer (Vertical Scroll)
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 30) {
-                            // Button for Search
+                            
                             HStack {
-                                // 1. New Current Location Button
+                                // Current Location Button
                                 Button(action: {
-                                    // This triggers the GPS. The ViewModel is already listening for the result!
+                                    // This triggers the GPS. The ViewModel is already listening for the result.
                                     viewModel.locationManager.requestLocation()
                                 }) {
                                     Image(systemName: "location.fill")
@@ -64,6 +59,7 @@ struct HomeView: View {
                                 }
                                 
                                 Spacer()
+                                // Button for Search
                                 Button(action: {
                                     showingSearch = true
                                 }) {
@@ -93,6 +89,7 @@ struct HomeView: View {
                     // Basic Error Handling UI
                     VStack {
                         HStack {
+                            // New currnt location button
                             Button(action: {
                                 // This triggers the GPS. The ViewModel is already listening for the result!
                                 viewModel.locationManager.requestLocation()
@@ -105,22 +102,30 @@ struct HomeView: View {
                             Spacer()
                         }
                         Spacer()
+                        Text("No Internet Connection")
+                            .foregroundColor(.red)
+                            .padding()
+                            .background(Color.white.opacity(0.8))
+                            .cornerRadius(10)
+                        Spacer()
                     }
                 }
                 
                 if viewModel.isOffline {
-                    Text("Offline Mode - No Internet Connection")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(Color.red.opacity(0.8))
-                        // Pushes the banner down just below the safe area notch/Dynamic Island
-                        .padding(.top, topSafeAreaPadding)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                        .animation(.easeInOut, value: viewModel.isOffline)
-                        .zIndex(1) // Ensures it draws completely above the ScrollView
+                    VStack {
+                        Text("Offline Mode - No Internet Connection")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(Color.red.opacity(0.8))
+                            .padding(.top, topSafeAreaPadding)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                            .animation(.easeInOut, value: viewModel.isOffline)
+                            .zIndex(1)
+                        Spacer()
+                    }
                 }
             }
             .onAppear {

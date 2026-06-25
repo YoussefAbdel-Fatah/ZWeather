@@ -10,27 +10,25 @@ import SwiftUI
 struct HourlyForecastView: View {
     let selectedDay: Day
     
-    // 1. Bring in the same time-of-day logic
     private var isNight: Bool {
         let hour = Calendar.current.component(.hour, from: Date())
         return hour < 6 || hour >= 18
         // return true
     }
     
-    // Dynamic text color to match the background
     private var dynamicTextColor: Color {
         isNight ? .white : .black
     }
     
     var body: some View {
         ZStack {
-            // 2. The Background Layer
+            // The Background Layer
             Image(isNight ? "background_night" : "background_morning")
                 .resizable()
                 .ignoresSafeArea()
-                .blur(radius: 1.0) // Matches the Home Screen style
+                .blur(radius: 1.0)
             
-            // 3. The Content Layer
+            // The Content Layer
             VStack(spacing: 0) {
                 List(Array(selectedDay.hours.enumerated()), id: \.element.id) { index, hour in
                     HStack {
